@@ -1,0 +1,40 @@
+const express = require("express");
+const cors = require("cors");
+const mongoose = require("mongoose");
+require("dotenv").config();
+
+const authRoutes = require("./routes/authRoutes");
+
+const app = express();
+
+app.use(cors());
+app.use(express.json());
+
+app.use("/api/auth", authRoutes);
+
+mongoose.connect(process.env.MONGO_URI, {
+    serverSelectionTimeoutMS: 30000
+ })
+.then(() => {
+    console.log("MongoDB Connected");
+ })
+.catch((err) => {
+    console.log(err);
+ });
+
+app.get("/", (req, res) => {
+    res.send("Banking Backend Running");
+ });
+ mongoose.connection.on("connected", () => {
+    console.log("Mongoose connected to DB");
+});
+
+mongoose.connection.on("error", (err) => {
+    console.log("Mongoose connection error:", err);
+});
+
+const PORT = 5000;
+
+app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+});
